@@ -182,6 +182,7 @@ screen.append(musicBox);
 screen.append(consoleBox);
 screen.key(['escape', 'q', 'C-c', 'C-z', 'enter'], function(ch, key) {
 	output.sendMessage([255]); //panic
+	__hardStop();
 	output.closePort();
 	return process.exit(0);
 });
@@ -219,12 +220,12 @@ function setTempo(){
 		setTimeout(function(){
 			console('__grooveCreator() -> started playing');
 			__grooveCreator();
-		}, beatsToStart(8*8,__mainTempo));
+		}, beatsToStart(12*8,__mainTempo));
 		
 		setTimeout(function(){
 			console('__drumCreator() -> started playing');
 			__drumCreator();
-		}, beatsToStart(14*8,__mainTempo));
+		}, beatsToStart(16*8,__mainTempo));
 		
 		setTimeout(function(){
 			console('__orchEffect() -> started playing');
@@ -232,10 +233,14 @@ function setTempo(){
 		}, beatsToStart(0,__mainTempo));
 		
 		setTimeout(function(){
+			console('BRIDGE PREPARE');
+			__earthevoice(); //make some noice with the earthvoice :-)
+		}, beatsToStart(22*8,__mainTempo));
+		
+		setTimeout(function(){
 			console('BRIDGE');
 			__hardStop();
-			__earthevoice(); //make some noice with the earthvoice :-)
-		}, beatsToStart(18*8,__mainTempo));
+		}, beatsToStart(24*8,__mainTempo));
 		
 	});
 }
@@ -347,13 +352,17 @@ function __grooveCreator(){
 // sitting in channel: [6]
 //
 var __drumCreator_timeout;
+var __drumCreator_counter=1;
 function __drumCreator(){
 	__drumCreator_durationchoice = [0.25, 0.25, 0.5, 0.5, 0.5, 0.5]; //0.25 = 16th, 0.5 eight etc.
 	var __drumCreator_SoundChoice = giveMeABrainWave(60, 96, function(__drumCreator_SoundChoice){
 		var __drumCreator_SoundChoiceNextevent = giveMeABrainWave(0, __drumCreator_durationchoice.length, function(__drumCreator_SoundChoiceNextevent){
 			//calculate duration in miliseconds.
-			__drumCreator_SoundChoiceNextevent = __drumCreator_durationchoice[__drumCreator_SoundChoiceNextevent]*((60/__mainTempo)*1000);	
-			play([6, __drumCreator_SoundChoice, __drumCreator_SoundChoiceNextevent, 58]);
+			__drumCreator_SoundChoiceNextevent = __drumCreator_durationchoice[__drumCreator_SoundChoiceNextevent]*((60/__mainTempo)*1000);			
+			if(__drumCreator_counter<68){
+				__drumCreator_counter++;	
+			}
+			play([6, __drumCreator_SoundChoice, __drumCreator_SoundChoiceNextevent, __drumCreator_counter]);
 			__drumCreator_timeout = setTimeout(function(){
 				__drumCreator()
 			}, __drumCreator_SoundChoiceNextevent);
