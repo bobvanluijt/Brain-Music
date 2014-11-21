@@ -49,9 +49,9 @@ function getAllMethods(object) {
 
 function play(play_i){
 	//
-	// use this by adding array: channel (1-16), key press (1-127), miliseconds till key up
-	//	play([1, 60, 500]);
-	//	play([channel, key, miliseconds]);
+	// use this by adding array: channel (1-16), key press (1-127), miliseconds till key up, velocity
+	//	play([1, 60, 500, 127]);
+	//	play([channel, key, miliseconds, velocity]);
 	//
 	//
 	// set array like: midival - note - volume
@@ -70,18 +70,24 @@ function play(play_i){
 	//////////////
 	var _channelStart 	= 143+play_i[0];
 	var _channelStop 	= 127+play_i[0];
+	var _channelVelocity= 127+play_i[0];
 	var _note	 		= play_i[1];
 	var _stopSec 		= play_i[2];
 
-	output.sendMessage([_channelStart, _note, 127]); //start playing
+	output.sendMessage([_channelStart, _note, _channelVelocity]); //start playing
 	
-	musicBox.insertLine(1, 'START '+decBin(_channelStart,7)+','+decBin(_note,7)+','+decBin(127,7));
+	musicBox.insertLine(1, 'START '+decBin(_channelStart,7)+','+decBin(_note,7)+','+decBin(_channelVelocity,7));
 	screen.render();
 	setTimeout(function(){
 		output.sendMessage([_channelStop, _note, 127]); //stop playing
-		musicBox.insertLine(1, 'STOP  '+decBin(_channelStop,7)+','+decBin(_note,7)+','+decBin(127,7));
+		musicBox.insertLine(1, 'STOP  '+decBin(_channelStop,7)+','+decBin(_note,7)+','+decBin(_channelVelocity,7));
 		screen.render();
 	}, _stopSec);
+}
+
+function console(i){
+	consoleBox.insertLine(1, i);
+	screen.render();
 }
 
 function decBin(dec,length){
@@ -188,17 +194,37 @@ screen.render();
 // class name = __randomSounds
 // sitting in channel: [1]
 //
-giveMeABrainWave(1250, 4800, function(__randomNewSound_theoutput){
+giveMeABrainWave(1280, 3800, function(__randomNewSound_theoutput){
+	console('__randomSounds() -> started playing');
 	setInterval(function(){
-		var __randomSounds_singleNote = giveMeABrainWave(60, 84, function(__randomSounds_theoutput){
+		var __randomSounds_singleNote = giveMeABrainWave(38, 56, function(__randomSounds_theoutput){
 			var __randomSounds_startMe = __randomSounds_theoutput;
-			var __randomSounds_stopNote = giveMeABrainWave(100, 750, function(__randomSounds_theoutput){
+			var __randomSounds_stopNote = giveMeABrainWave(1250, 3200, function(__randomSounds_theoutput){
 				__randomSounds_stopMe = __randomSounds_theoutput;
-				play([1, __randomSounds_startMe, __randomSounds_stopMe]);
+				play([1, __randomSounds_startMe, __randomSounds_stopMe, 120]);
 			});
 		});
 	}, __randomNewSound_theoutput);
 });
+
+// set random bass sounds
+// class name = __randomBassSounds
+// sitting in channel: [2]
+//
+function __randomBassSounds(){
+	console('__randomBassSounds() -> started playing');
+	var __randomBassSounds_theoutput = giveMeABrainWave(6800, 16800, function(__randomBassSounds_theoutput){
+		var __randomBassSounds_note = giveMeABrainWave(30, 42, function(__randomBassSounds_note){
+			play([2, __randomBassSounds_note, __randomBassSounds_theoutput, 74]);
+			setTimeout(function(){
+				__randomBassSounds();
+			}, __randomBassSounds_theoutput);
+		});
+	});
+}
+setTimeout(function(){
+	__randomBassSounds();
+}, 12800);
 //-------------------------------------//
 //////
 /////
