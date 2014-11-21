@@ -41,10 +41,34 @@ function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function millisecondsToTime(milli){
+      var milliseconds = milli % 1000;
+      var seconds = Math.floor((milli / 1000) % 60);
+      var minutes = Math.floor((milli / (60 * 1000)) % 60);
+      return minutes + ":" + seconds + "." + milliseconds;
+}
+
 function getAllMethods(object) {
     return Object.getOwnPropertyNames(object).filter(function(property) {
         return typeof object[property] == 'function';
     });
+}
+
+function pan(channel, val){
+	//
+	// pan always returns to 64
+	//
+	if(val!=63){
+		output.sendMessage([175+channel, 10, val]); //start panning
+		if(val<63){
+			val++;	
+		} else {
+			val--;
+		}
+		setTimeout(function(){
+			pan(channel, val);
+		}, __mainTempo);
+	}
 }
 
 function play(play_i){
@@ -160,9 +184,32 @@ var consoleBox = blessed.box({
   top: 'center',
   left: 'center',
   width: '33%',
-  height: '100%',
+  height: '70%',
   left: '66%',
+  top: '0%',
   content: "LOG DATA",
+  tags: true,
+  border: {
+    type: 'line'
+  },
+  style: {
+    fg: 'white',
+    border: {
+      fg: '#f0f0f0'
+    },
+    hover: {
+      bg: 'green'
+    }
+  }
+});
+var kubBox = blessed.box({
+  top: 'center',
+  left: 'center',
+  width: '33%',
+  height: '31%',
+  left: '66%',
+  top: '70%',
+  content: " +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ \n |k| |u| |b| |r| |i| |c| |k| |o| |o| |g| |y| \n +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+",
   tags: true,
   border: {
     type: 'line'
@@ -180,6 +227,7 @@ var consoleBox = blessed.box({
 screen.append(brainBox);
 screen.append(musicBox);
 screen.append(consoleBox);
+screen.append(kubBox);
 screen.key(['escape', 'q', 'C-c', 'C-z', 'enter'], function(ch, key) {
 	output.sendMessage([255]); //panic
 	__hardStop();
@@ -214,9 +262,10 @@ setTimeout(function(){
 
 var __mainTempo;
 function setTempo(){
-	var __setTempo_val = giveMeABrainWave(80, 140, function(__setTempo_val){
+	var __setTempo_val = giveMeABrainWave(92, 128, function(__setTempo_val){
 		console("<<SET TEMPO: "+__setTempo_val+'>>');
 		__mainTempo = __setTempo_val;
+		
 		setTimeout(function(){
 			console('__grooveCreator() -> started playing');
 			__grooveCreator();
@@ -235,12 +284,81 @@ function setTempo(){
 		setTimeout(function(){
 			console('BRIDGE PREPARE');
 			__earthevoice(); //make some noice with the earthvoice :-)
-		}, beatsToStart(22*8,__mainTempo));
+		}, beatsToStart(28*8,__mainTempo));
 		
 		setTimeout(function(){
 			console('BRIDGE');
 			__hardStop();
-		}, beatsToStart(24*8,__mainTempo));
+		}, beatsToStart(29*8,__mainTempo));
+		
+		setTimeout(function(){
+			__counterpoint();
+		}, beatsToStart(32*8,__mainTempo));
+		
+		setTimeout(function(){
+			__counterpoint2();
+		}, beatsToStart(40*8,__mainTempo));
+		
+		setTimeout(function(){
+			__randomCrystalSounds();
+		}, beatsToStart(45*8,__mainTempo));
+		
+		setTimeout(function(){
+			console('__drumCreator() -> started playing');
+			__drumCreator_counter=0;
+			__drumCreator();
+		}, beatsToStart(49*8,__mainTempo));
+		
+		setTimeout(function(){
+			console('__grooveCreator() -> started playing');
+			__grooveCreator();
+		}, beatsToStart(51*8,__mainTempo));
+		
+		setTimeout(function(){
+			console('__fatEndArp() -> started playing');
+			__fatEndArp();
+		}, beatsToStart(51*8,__mainTempo));
+		
+		setTimeout(function(){
+			console('__fatEndBeat() -> started playing');
+			__fatEndBeat();
+		}, beatsToStart(51*8,__mainTempo));
+		
+		setTimeout(function(){
+			console('__orchEffect() -> started playing');
+			__orchEffect();
+		}, beatsToStart(52*8,__mainTempo));
+		
+		setTimeout(function(){
+			console('BRIDGE PREPARE');
+			__earthevoice(); //make some noice with the earthvoice :-)
+		}, beatsToStart(57*8,__mainTempo));
+		
+		setTimeout(function(){
+			console('BRIDGE');
+			__hardStop();
+		}, beatsToStart(58*8,__mainTempo));
+		
+		///
+		// extra hardstop
+		//
+		setTimeout(function(){
+			console('BRIDGE');
+			__hardStop();
+		}, beatsToStart(59*8,__mainTempo));
+		
+		///
+		// vars for duration and stuff
+		///
+		var totalCount=beatsToStart(54*8,__mainTempo);
+		setInterval(function(){
+			totalCount--;
+			kubBox.setLine(4, " Duration: "+millisecondsToTime(totalCount));
+			kubBox.setLine(5, " Duration: "+totalCount);
+			kubBox.setLine(7, " MdePlayer v0.01 ♥");
+			kubBox.setLine(8, " Created by Bob van Luijt (@bobvanluijt)");
+			screen.render();
+		}, 1);
 		
 	});
 }
@@ -286,6 +404,49 @@ function __randomBassSounds(){
 setTimeout(function(){
 	__randomBassSounds();
 }, 22800);
+
+// set random counterpoint
+// class name = __counterpoint
+// sitting in channel: [2]
+//
+var __counterpoint_timeout01;
+function __counterpoint(){
+	console('__counterpoint() -> started playing');
+	var __counterpoint_CMinor = [(58-__mainKey), (60-__mainKey), (62-__mainKey), (63-__mainKey), (65-__mainKey), (67-__mainKey), (68-__mainKey)]; //60 = C, 58=Bb
+	var __counterpoint_counts = [8, 12, 16, 18];
+	var __counterpoint_note = giveMeABrainWave(48, 68, function(__counterpoint_note){
+		//__counterpoint_note = __counterpoint_CMinor[__counterpoint_note];
+		var __counterpoint_length = giveMeABrainWave(0, __counterpoint_counts.length, function(__counterpoint_length){
+			__counterpoint_length = __counterpoint_counts[__counterpoint_length]*((60/__mainTempo)*1000);
+			var __counterpoint_length2 = giveMeABrainWave(0, __counterpoint_counts.length, function(__counterpoint_length2){
+				__counterpoint_length2 = __counterpoint_counts[__counterpoint_length2]*((60/__mainTempo)*1000);
+				play([2, __counterpoint_note, __counterpoint_length, 92]);
+				__counterpoint_timeout01 = setTimeout(function(){
+					__counterpoint();
+				}, __counterpoint_length2);
+			});
+		});
+	});
+}
+
+// set random counterpoint2
+// class name = __counterpoint2
+// sitting in channel: [8]
+//
+var __counterpoint2_timeout01;
+function __counterpoint2(){
+	console('__counterpoint2() -> started playing');
+	var __counterpoint2_counts = [8, 12, 16, 18];
+	var __counterpoint2_note = giveMeABrainWave(64, 80, function(__counterpoint2_note){
+	var __counterpoint2_length = giveMeABrainWave(0, __counterpoint2_counts.length, function(__counterpoint2_length){
+		__counterpoint2_length = __counterpoint2_counts[__counterpoint2_length]*((60/__mainTempo)*1000);
+			play([8, __counterpoint2_note, __counterpoint2_length, 92]);
+			__counterpoint2_timeout01 = setTimeout(function(){
+				__counterpoint2();
+			}, __counterpoint2_length);
+		});
+	});
+}
 
 // set random bassdrum sound
 // class name = __randomBassdrumSound
@@ -376,7 +537,11 @@ function __drumCreator(){
 //
 function __earthevoice(){
 	var __earthevoice_SoundChoice = giveMeABrainWave(60, 72, function(__earthevoice_SoundChoice){
-			play([7, __earthevoice_SoundChoice, 4000, 127]);
+			play([7, __earthevoice_SoundChoice, 4000, 104]);
+			console('TIBET BELL --> TINGGGG');
+			play([12, 60, 8000, 104]); //tibet bell
+			console('FEMALE VOICE --> TRALALA');
+			play([14, 60, 8000, 127]); //female voice
 	});
 }
 
@@ -388,6 +553,9 @@ function __earthevoice(){
 var __orchEffect_timeout;
 function __orchEffect(){
 	var __orchEffect_SoundChoice = giveMeABrainWave(48, 72, function(__orchEffect_SoundChoice){
+		var __orchEffect__pan = giveMeABrainWave(0, 127, function(__orchEffect__pan){
+			pan(11, __orchEffect__pan);
+		});
 		var __orchEffect__SoundChoiceNextevent = giveMeABrainWave(2200, 9000, function(__orchEffect__SoundChoiceNextevent){
 			play([11, __orchEffect_SoundChoice, __orchEffect__SoundChoiceNextevent, 58]);
 			__orchEffect_timeout = setTimeout(function(){
@@ -397,8 +565,41 @@ function __orchEffect(){
 	});
 }
 
+// set fat arp
+// class name = __fatEndArp
+// sitting in channel: [9]
+//
+var __fatEndArp_timeout;
+var __fatEndArp_i=0;
+function __fatEndArp(){
+	var __fatEndArp_CMinor = [(58-__mainKey), (60-__mainKey), (62-__mainKey), (63-__mainKey), (65-__mainKey), (67-__mainKey), (68-__mainKey)]; //60 = C, 58=Bb
+	var __fatEndArp_SoundChoice = giveMeABrainWave(0, __fatEndArp_CMinor.length, function(__fatEndArp_SoundChoice){
+		__fatEndArp_SoundChoice = __fatEndArp_CMinor[__fatEndArp_SoundChoice];
+		if(__fatEndArp_i<127){
+			__fatEndArp_i++;
+		}
+		play([9, __fatEndArp_SoundChoice, 0.25*(60/__mainTempo)*1000, __fatEndArp_i]);
+		__fatEndArp_timeout = setTimeout(function(){
+			__fatEndArp();
+		}, 0.25*(60/__mainTempo)*1000);
+	});
+}
 
-
+// set fat arp
+// class name = __fatEndBeat
+// sitting in channel: [10]
+//
+var __fatEndBeat_timeout;
+var __fatEndBeat_i=0;
+function __fatEndBeat(){
+	if(__fatEndBeat_i<127){
+		__fatEndBeat_i++;
+	}
+	play([10, 41, 1*(60/__mainTempo)*1000, __fatEndBeat_i]);
+	__fatEndBeat_timeout = setTimeout(function(){
+		__fatEndBeat();
+	}, 1*(60/__mainTempo)*1000);
+}
 
 function __hardStop(){
 	clearInterval(__randomNewSound_theoutput_timeout);
@@ -408,9 +609,11 @@ function __hardStop(){
 	clearTimeout(__grooveCreator_timeout);
 	clearTimeout(__drumCreator_timeout);
 	clearTimeout(__orchEffect_timeout);
+	clearTimeout(__fatEndArp_timeout);
+	clearTimeout(__fatEndBeat_timeout);
+	clearTimeout(__counterpoint);
+	clearTimeout(__counterpoint2);
 }
-
-
 
 //-------------------------------------//
 //////
