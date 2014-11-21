@@ -201,7 +201,7 @@ screen.render();
 // __mainKey can be changed or used at all times
 //
 var __mainKey = 0;
-function setKey(){
+function setKey(){ 
 	var __mainKey_val = giveMeABrainWave(0, 11, function(__mainKey_val){
 		__mainKey = __mainKey_val-6;
 		console('MainKey is set to: '+__mainKey);
