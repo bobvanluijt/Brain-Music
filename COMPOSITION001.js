@@ -208,12 +208,12 @@ function setKey(){
 	});
 }
 setTimeout(function(){
-	setTempo();
+	setKey();
 }, 500);
 
 var __mainTempo;
 function setTempo(){
-	var __setTempo_val = giveMeABrainWave(80, 120, function(__setTempo_val){
+	var __setTempo_val = giveMeABrainWave(80, 140, function(__setTempo_val){
 		console("<<SET TEMPO: "+__setTempo_val+'>>');
 		__mainTempo = __setTempo_val;
 		setTimeout(function(){
@@ -222,9 +222,21 @@ function setTempo(){
 		}, beatsToStart(8*8,__mainTempo));
 		
 		setTimeout(function(){
-				console('__drumCreator() -> started playing');
+			console('__drumCreator() -> started playing');
 			__drumCreator();
 		}, beatsToStart(14*8,__mainTempo));
+		
+		setTimeout(function(){
+			console('__orchEffect() -> started playing');
+			__orchEffect();
+		}, beatsToStart(0,__mainTempo));
+		
+		setTimeout(function(){
+			console('BRIDGE');
+			__hardStop();
+			__earthevoice(); //make some noice with the earthvoice :-)
+		}, beatsToStart(18*8,__mainTempo));
+		
 	});
 }
 setTimeout(function(){
@@ -235,10 +247,11 @@ setTimeout(function(){
 // class name = __randomSounds
 // sitting in channel: [1]
 //
+var __randomNewSound_theoutput_timeout;
 var __randomNewSound_theoutput = 500; //setting for general starting purposes
 giveMeABrainWave(5280, 8840, function(__randomNewSound_theoutput){
 	console('__randomSounds() -> started playing');
-	setInterval(function(){
+	__randomNewSound_theoutput_timeout = setInterval(function(){
 		var __randomSounds_singleNote = giveMeABrainWave(50, 62, function(__randomSounds_theoutput){
 			var __randomSounds_startMe = __randomSounds_theoutput;
 			var __randomSounds_theoutput = giveMeABrainWave(1250, 3200, function(__randomSounds_theoutput){
@@ -253,12 +266,13 @@ giveMeABrainWave(5280, 8840, function(__randomNewSound_theoutput){
 // class name = __randomBassSounds
 // sitting in channel: [2]
 //
+var __randomBassSounds_timeout;
 function __randomBassSounds(){
 	console('__randomBassSounds() -> started playing');
 	var __randomBassSounds_theoutput = giveMeABrainWave(14800, 26800, function(__randomBassSounds_theoutput){
 		var __randomBassSounds_note = giveMeABrainWave(40, 52, function(__randomBassSounds_note){
 			play([2, __randomBassSounds_note, __randomBassSounds_theoutput, 56]);
-			setTimeout(function(){
+			__randomBassSounds_timeout = setTimeout(function(){
 				__randomBassSounds();
 			}, __randomBassSounds_theoutput);
 		});
@@ -272,11 +286,12 @@ setTimeout(function(){
 // class name = __randomBassdrumSound
 // sitting in channel: [3]
 //
+var __randomBassdrumSound_timeout;
 function __randomBassdrumSound(){
 	console('__randomBassdrumSounds() -> started playing');
 	var __randomBassdrumSound_note = giveMeABrainWave(20000, 32000, function(__randomBassdrumSound_note){
 		play([3, 60, 5000, 127]);
-		setTimeout(function(){
+		__randomBassdrumSound_timeout = setTimeout(function(){
 			__randomBassdrumSound();
 		}, __randomBassdrumSound_note);
 	});
@@ -289,12 +304,13 @@ setTimeout(function(){
 // class name = __randomCrystalSounds
 // sitting in channel: [4]
 //
+var __randomCrystalSounds_timeout;
 function __randomCrystalSounds(){
 	console('__randomCrystalSounds() -> started playing');
 	var __randomCrystalSounds_theoutput = giveMeABrainWave(14800, 26800, function(__randomCrystalSounds_theoutput){
 		var __randomCrystalSounds_note = giveMeABrainWave(40, 70, function(__randomCrystalSounds_note){
 			play([4, __randomCrystalSounds_note, __randomCrystalSounds_theoutput, 24]);
-			setTimeout(function(){
+			__randomCrystalSounds_timeout = setTimeout(function(){
 				__randomCrystalSounds();
 			}, __randomCrystalSounds_theoutput);
 		});
@@ -308,6 +324,7 @@ setTimeout(function(){
 // class name = __grooveCreator
 // sitting in channel: [5]
 //
+var __grooveCreator_timeout;
 function __grooveCreator(){
 	var __basicInput_CMinor = [(58-__mainKey), (60-__mainKey), (62-__mainKey), (63-__mainKey), (65-__mainKey), (67-__mainKey), (68-__mainKey)]; //60 = C, 58=Bb
 	var __basicInput_counts = [4,8,12,16];
@@ -318,7 +335,7 @@ function __grooveCreator(){
 			__basicInput_noteChoice = __basicInput_CMinor[__basicInput_noteChoice];
 			console('Groove '+__basicInput_noteChoice+' for '+__basicInput_countsChoice);
 			play([5, __basicInput_noteChoice, __basicInput_countsChoice, 42]);
-			setTimeout(function(){
+			__grooveCreator_timeout = setTimeout(function(){
 				__grooveCreator();
 			}, __basicInput_countsChoice);
 		});
@@ -329,6 +346,7 @@ function __grooveCreator(){
 // class name = __drumCreator
 // sitting in channel: [6]
 //
+var __drumCreator_timeout;
 function __drumCreator(){
 	__drumCreator_durationchoice = [0.25, 0.25, 0.5, 0.5, 0.5, 0.5]; //0.25 = 16th, 0.5 eight etc.
 	var __drumCreator_SoundChoice = giveMeABrainWave(60, 96, function(__drumCreator_SoundChoice){
@@ -336,12 +354,54 @@ function __drumCreator(){
 			//calculate duration in miliseconds.
 			__drumCreator_SoundChoiceNextevent = __drumCreator_durationchoice[__drumCreator_SoundChoiceNextevent]*((60/__mainTempo)*1000);	
 			play([6, __drumCreator_SoundChoice, __drumCreator_SoundChoiceNextevent, 58]);
-			setTimeout(function(){
+			__drumCreator_timeout = setTimeout(function(){
 				__drumCreator()
 			}, __drumCreator_SoundChoiceNextevent);
 		});
 	});
 }
+
+// set earth voice
+// class name = __earthevoice
+// sitting in channel: [7]
+//
+function __earthevoice(){
+	var __earthevoice_SoundChoice = giveMeABrainWave(60, 72, function(__earthevoice_SoundChoice){
+			play([7, __earthevoice_SoundChoice, 4000, 127]);
+	});
+}
+
+
+// set orchestra effects
+// class name = __orchEffect
+// sitting in channel: [11]
+//
+var __orchEffect_timeout;
+function __orchEffect(){
+	var __orchEffect_SoundChoice = giveMeABrainWave(48, 72, function(__orchEffect_SoundChoice){
+		var __orchEffect__SoundChoiceNextevent = giveMeABrainWave(2200, 9000, function(__orchEffect__SoundChoiceNextevent){
+			play([11, __orchEffect_SoundChoice, __orchEffect__SoundChoiceNextevent, 58]);
+			__orchEffect_timeout = setTimeout(function(){
+				__orchEffect()
+			}, __orchEffect__SoundChoiceNextevent*3.2);
+		});
+	});
+}
+
+
+
+
+function __hardStop(){
+	clearInterval(__randomNewSound_theoutput_timeout);
+	clearTimeout(__randomBassSounds_timeout);
+	clearTimeout(__randomBassdrumSound_timeout);
+	clearTimeout(__randomCrystalSounds_timeout);
+	clearTimeout(__grooveCreator_timeout);
+	clearTimeout(__drumCreator_timeout);
+	clearTimeout(__orchEffect_timeout);
+}
+
+
 
 //-------------------------------------//
 //////
