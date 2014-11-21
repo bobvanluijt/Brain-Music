@@ -6,7 +6,7 @@
  |_|\_\\__,_|_.__/|_|  |_|\___|_|\_\___/|_|\___/ \__, |\__, |
                                                   __/ | __/ |
                                                  |___/ |___/ 
-	Composition by Bob van Luijt
+	Composition and code by Bob van Luijt
 	You are free to use and fuck up this piece of music :-P
 												 */
 												 
