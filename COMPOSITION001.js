@@ -7,14 +7,14 @@
                                                   __/ | __/ |
                                                  |___/ |___/ 
 	Composition and code by Bob van Luijt
-	You are free to use and fuck up this piece of music :-P
+	You are free to use and dance :-P
 												 */
 												 
 function giveMeABrainWave(min, max, fn){
     //
     //OUPUT as 0 to 127 MIDI signal or other min max
     //
-	//oscdump 5000 | grep /muse/eeg
+	//oscdump 5000 | grep /muse/eeg > data1
 	//
 	if(status=='REHEARSE'){
 		stdout = getRandomInt(min, max);
@@ -28,10 +28,16 @@ function giveMeABrainWave(min, max, fn){
 			stdout = stdout % max;
 			if(stdout<min){
 				stdout = min+(stdout%(max-min));
+				if(stdout==0){
+					stdout = getRandomInt(min, max); //fallback
+				}	
 				brainBox.insertLine(1, 'REQUEST BRAIN INFO | ROUTE 002.1 | '+stdout);
 				screen.render();
 				fn(stdout);
 			} else {
+				if(stdout==0){
+					stdout = getRandomInt(min, max); //fallback
+				}
 				brainBox.insertLine(1, 'REQUEST BRAIN INFO | ROUTE 002.2 | '+stdout);
 				screen.render();
 				fn(stdout);
@@ -265,7 +271,7 @@ setTimeout(function(){
 
 var __mainTempo;
 function setTempo(){
-	var __setTempo_val = giveMeABrainWave(92, 128, function(__setTempo_val){
+	var __setTempo_val = giveMeABrainWave(60, 162, function(__setTempo_val){
 		console("<<SET TEMPO: "+__setTempo_val+'>>');
 		__mainTempo = __setTempo_val;
 		
@@ -335,12 +341,12 @@ function setTempo(){
 		setTimeout(function(){
 			console('BRIDGE PREPARE');
 			__earthevoice(); //make some noice with the earthvoice :-)
-		}, beatsToStart(57*8,__mainTempo));
+		}, beatsToStart(54*8,__mainTempo));
 		
 		setTimeout(function(){
-			console('BRIDGE');
+			console('<<<ENDING CLOSE DOWN NOW>>>');
 			__hardStop();
-		}, beatsToStart(58*8,__mainTempo));
+		}, beatsToStart(56*8,__mainTempo));
 		
 		///
 		// extra hardstop
@@ -348,7 +354,7 @@ function setTempo(){
 		setTimeout(function(){
 			console('BRIDGE');
 			__hardStop();
-		}, beatsToStart(59*8,__mainTempo));
+		}, beatsToStart(57*8,__mainTempo));
 		
 		///
 		// vars for duration and stuff
@@ -360,6 +366,7 @@ function setTempo(){
 			kubBox.setLine(5, " Duration: "+totalCount);
 			kubBox.setLine(7, " MdePlayer v0.01 ♥");
 			kubBox.setLine(8, " Created by Bob van Luijt (@bobvanluijt)");
+			kubBox.setLine(9, " Download github.com/kubrickology/Brain-Music");
 			screen.render();
 		}, 1);
 		
