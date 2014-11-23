@@ -28,14 +28,16 @@ function giveMeABrainWave(min, max, fn){
 			stdout = stdout % max;
 			if(stdout<min){
 				stdout = min+(stdout%(max-min));
-				if(stdout==0){
+				//only in fallback mode when loosing data or signal
+				if(stdout==0 || stdout===false){
 					stdout = getRandomInt(min, max); //fallback
 				}	
 				brainBox.insertLine(1, 'REQUEST BRAIN INFO | ROUTE 002.1 | '+stdout);
 				screen.render();
 				fn(stdout);
 			} else {
-				if(stdout==0){
+				//only in fallback mode when loosing data or signal
+				if(stdout==0 || stdout===false){
 					stdout = getRandomInt(min, max); //fallback
 				}
 				brainBox.insertLine(1, 'REQUEST BRAIN INFO | ROUTE 002.2 | '+stdout);
