@@ -18,7 +18,7 @@ function giveMeABrainWave(min, max, fn){
 	//
 	if(status=='REHEARSE'){
 		stdout = getRandomInt(min, max);
-		brainBox.insertLine(1, 'REQUEST BRAIN INFO | ROUTE 001 | '+stdout);
+		brainBox.insertLine(1, 'REQUEST BRAIN INFO | ROUTE 002 | '+stdout);
 		screen.render();
 		fn(stdout);
 	} else {
@@ -32,7 +32,7 @@ function giveMeABrainWave(min, max, fn){
 				if(stdout==0 || stdout===false){
 					stdout = getRandomInt(min, max); //fallback
 				}	
-				brainBox.insertLine(1, 'REQUEST BRAIN INFO | ROUTE 002.1 | '+stdout);
+				brainBox.insertLine(1, 'REQUEST BRAIN INFO | ROUTE 001 | '+stdout);
 				screen.render();
 				fn(stdout);
 			} else {
@@ -40,7 +40,7 @@ function giveMeABrainWave(min, max, fn){
 				if(stdout==0 || stdout===false){
 					stdout = getRandomInt(min, max); //fallback
 				}
-				brainBox.insertLine(1, 'REQUEST BRAIN INFO | ROUTE 002.2 | '+stdout);
+				brainBox.insertLine(1, 'REQUEST BRAIN INFO | ROUTE 001 | '+stdout);
 				screen.render();
 				fn(stdout);
 			}
