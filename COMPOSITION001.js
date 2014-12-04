@@ -273,7 +273,7 @@ setTimeout(function(){
 
 var __mainTempo;
 function setTempo(){
-	var __setTempo_val = giveMeABrainWave(60, 162, function(__setTempo_val){
+	var __setTempo_val = giveMeABrainWave(92, 92, function(__setTempo_val){
 		console("<<SET TEMPO: "+__setTempo_val+'>>');
 		__mainTempo = __setTempo_val;
 		
